@@ -38,7 +38,7 @@ obsline = []; obskeyline = [] ;
 keyline = []; expline = []; systlines = {}
 signals = []; backgrounds = []; shapeLines = []
 paramSysts = {}; flatParamNuisances = {}; discreteNuisances = {}; groups = {}; rateParams = {}; rateParamsOrder = set()
-chargeGroups = OrderedDict(); polGroups = OrderedDict(); sumGroups = OrderedDict(); chargeMetaGroups = OrderedDict(); regGroups = OrderedDict();
+chargeGroups = OrderedDict(); polGroups = OrderedDict(); sumGroups = OrderedDict(); chargeMetaGroups = OrderedDict(); regGroups = OrderedDict(); ratioMetaGroups = OrderedDict(); noiGroups = OrderedDict();
 extArgs = {}; binParFlags = {}
 nuisanceEdits = [];
 
@@ -211,6 +211,24 @@ for ich,fname in enumerate(args):
         else:
             chargeMetaGroups[groupName] = procNames
 
+    for groupName,procNames in DC.ratioMetaGroups.iteritems():
+        if groupName in ratioMetaGroups:
+            if ratioMetaGroups[groupName] == procNames:
+                continue
+            else:
+                raise RuntimeError, "Conflicting definition of ratioMetaGroup %s" % groupName
+        else:
+            ratioMetaGroups[groupName] = procNames
+
+    for groupName,procNames in DC.noiGroups.iteritems():
+        if groupName in noiGroups:
+            if noiGroups[groupName] == procNames:
+                continue
+            else:
+                raise RuntimeError, "Conflicting definition of noiGroup %s" % groupName
+        else:
+            noiGroups[groupName] = procNames
+
     for groupName,procNames in DC.regGroups.iteritems():
         if groupName in regGroups:
             if regGroups[groupName] == procNames:
@@ -219,7 +237,6 @@ for ich,fname in enumerate(args):
                 raise RuntimeError, "Conflicting definition of regGroup %s" % groupName
         else:
             regGroups[groupName] = procNames
-
 
     # Finally report nuisance edits propagated to end of card
     for editline in DC.nuisanceEditLines:
@@ -316,7 +333,6 @@ for ext in extArgs.iterkeys():
 for groupName,nuisanceNames in groups.iteritems():
     nuisances = ' '.join(nuisanceNames)
     print '%(groupName)s group = %(nuisances)s' % locals()
-
 for groupName,procNames in chargeGroups.iteritems():
     procs = ' '.join(procNames)
     print '%(groupName)s chargeGroup = %(procs)s' % locals()
@@ -329,6 +345,12 @@ for groupName,procNames in sumGroups.iteritems():
 for groupName,procNames in chargeMetaGroups.iteritems():
     procs = ' '.join(procNames)
     print '%(groupName)s chargeMetaGroup = %(procs)s' % locals()
+for groupName,procNames in ratioMetaGroups.iteritems():
+    procs = ' '.join(procNames)
+    print '%(groupName)s ratioMetaGroup = %(procs)s' % locals()
+for groupName,procNames in noiGroups.iteritems():
+    procs = ' '.join(procNames)
+    print '%(groupName)s noiGroup = %(procs)s' % locals()
 for groupName,procNames in regGroups.iteritems():
     procs = ' '.join(procNames)
     print '%(groupName)s regGroup = %(procs)s' % locals()
